@@ -21,7 +21,8 @@ async function runCalculation() {
   renderResults(rows);
 }
 
-document.getElementById("runCalc").addEventListener("click", () => {
+document.getElementById("runCalc").addEventListener("click", async () => {
+  console.log("Button clicked!"); // This helps you test
   const g = getGlobal();
   const enabled = pipes.filter((p) => p.enabled);
 
