@@ -1,10 +1,9 @@
-import IAPWS97 from "@neutrium/thermo-iaspw97";
+// api/simulate.js (The top part)
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).send("Use POST");
-  const { pipe, global } = req.body;
+  const { pipe, global, waterData } = req.body; // Receive waterData from browser
   try {
-    // Call your simulation function
-    const result = simulatePipe(pipe, global);
+    // Pass waterData directly into your simulation
+    const result = simulatePipe(pipe, global, waterData);
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -211,29 +210,29 @@ function airProps(Tf) {
   };
 }
 
-function waterPropsFromInitialTemp_F(Tf) {
-  // Convert °F → K
-  const Tk = ((Tf - 32) * 5) / 9 + 273.15;
+// function waterPropsFromInitialTemp_F(Tf) {
+//   // Convert °F → K
+//   const Tk = ((Tf - 32) * 5) / 9 + 273.15;
 
-  // Atmospheric pressure
-  const P_MPa = 0.101325;
+//   // Atmospheric pressure
+//   const P_MPa = 0.101325;
 
-  // IAPWS IF97 region lookup using T & P
-  const water = NeutriumJS.thermo.IAPWS97.PT.solve(P_MPa, Tk);
+//   // IAPWS IF97 region lookup using T & P
+//   const water = NeutriumJS.thermo.IAPWS97.PT.solve(P_MPa, Tk);
 
-  // Returned SI units:
-  // water.rho  → kg/m³
-  // water.cp   → kJ/(kg·K)
+//   // Returned SI units:
+//   // water.rho  → kg/m³
+//   // water.cp   → kJ/(kg·K)
 
-  return {
-    rho_kgm3: water.rho,
-    cp_kJkgK: water.cp,
+//   return {
+//     rho_kgm3: water.rho,
+//     cp_kJkgK: water.cp,
 
-    // Converted to Imperial (what your model uses)
-    rho_lbft3: water.rho * 0.062428, // kg/m3 → lb/ft3
-    cp_Btu: water.cp * 0.238846, // kJ/kg-K → Btu/lbm-F
-  };
-}
+//     // Converted to Imperial (what your model uses)
+//     rho_lbft3: water.rho * 0.062428, // kg/m3 → lb/ft3
+//     cp_Btu: water.cp * 0.238846, // kJ/kg-K → Btu/lbm-F
+//   };
+// }
 
 // ---- Insulation thermal conductivity regressions from Pipe Data sheet [1](https://blackandveatch-my.sharepoint.com/personal/thiptinnakornp_bv_com/_layouts/15/Doc.aspx?sourcedoc=%7B6277BE68-B411-4EFF-B268-C3D8B627CEE5%7D&file=Time_to_Freeze_Calculation%20%28CS%29.xlsm&action=default&mobileredirect=true)
 // All of these are in Btu/(h*ft*F) already in sheet (k = a0 + a1*T(F) + a2*T(F)^2)
@@ -541,7 +540,12 @@ function heatLossPerFoot_BtuPerHr(params) {
 // Stage 1: cool water from Tinit -> 32°F
 // Stage 2: freeze fraction of water mass (based on radius frozen criterion)
 // Uses time-stepping (dt) as workbook indicates iteration steps. [1](https://blackandveatch-my.sharepoint.com/personal/thiptinnakornp_bv_com/_layouts/15/Doc.aspx?sourcedoc=%7B6277BE68-B411-4EFF-B268-C3D8B627CEE5%7D&file=Time_to_Freeze_Calculation%20%28CS%29.xlsm&action=default&mobileredirect=true)
-function simulatePipe(pipe, global) {
+function simulatePipe(pipe, global, waterData) {
+  // Instead of: const waterProps = waterPropsFromInitialTemp_F(tInitF);
+  // Use the data passed from the browser:
+  const rhoWater = waterData.rho_lbft3;
+  const cpWater = waterData.cp_Btu;
+
   const logLines = [];
 
   const {
@@ -601,8 +605,8 @@ function simulatePipe(pipe, global) {
   // Get water properties at initial temperature
   const waterProps = waterPropsFromInitialTemp_F(tInitF);
 
-  const rhoWater = waterProps.rho_lbft3; // lb/ft3
-  const cpWater = waterProps.cp_Btu; // Btu/lbm-F
+  //   const rhoWater = waterProps.rho_lbft3; // lb/ft3
+  //   const cpWater = waterProps.cp_Btu; // Btu/lbm-F
 
   const Vwater = PI * (r1_ft * r1_ft) * 1; // ft3 per ft length
   const mWater = Vwater * rhoWater; // lbm per ft
@@ -885,4 +889,3 @@ addRow({ enabled: true, nominal: 2, schedule: 80, material: "CS" });
 document.getElementById("massFrozen").value =
   massFrozenFromRadiusPct(10).toFixed(3);
 dumpPipeData();
-
