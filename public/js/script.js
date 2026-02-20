@@ -1,6 +1,22 @@
 // 1. GLOBAL VARIABLES (Top of file)
 let pipes = [];
 const IN_TO_FT = 1 / 12; // Some constants are needed in both places
+const pipeOD_in = {
+  1: 1.315,
+  1.5: 1.9,
+  2: 2.375,
+  2.5: 2.875,
+  3: 3.5,
+  4: 4.5,
+  6: 6.625,
+  8: 8.625,
+  10: 10.75,
+  12: 12.75,
+  14: 14.0,
+  16: 16.0,
+  18: 18.0,
+  20: 20.0,
+};
 
 // 2. UI & TABLE FUNCTIONS
 function addRow(
