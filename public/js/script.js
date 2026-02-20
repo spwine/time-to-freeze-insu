@@ -18,6 +18,19 @@ const pipeOD_in = {
   20: 20.0,
 };
 
+function dumpPipeData() {
+  const dump = {
+    pipeOD_in,
+    wallCS_in_schedules: Object.keys(wallCS_in),
+    wallSS_in_schedules: Object.keys(wallSS_in),
+    airRegressions: { AIR_NU, AIR_PR, AIR_K_WMK },
+    insulationTypes: Object.keys(INS_K),
+  };
+  document.getElementById("pipeDataDump").textContent =
+    JSON.stringify(dump, null, 2) +
+    "\n\nNotes: OD/thickness and regression coefficients are from the workbook Pipe Data sheet. [1](https://blackandveatch-my.sharepoint.com/personal/thiptinnakornp_bv_com/_layouts/15/Doc.aspx?sourcedoc=%7B6277BE68-B411-4EFF-B268-C3D8B627CEE5%7D&file=Time_to_Freeze_Calculation%20%28CS%29.xlsm&action=default&mobileredirect=true)";
+}
+
 // 2. UI & TABLE FUNCTIONS
 function addRow(
   pipe = { enabled: true, nominal: 1, schedule: 80, material: "CS" },
