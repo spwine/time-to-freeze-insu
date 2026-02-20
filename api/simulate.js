@@ -1,4 +1,4 @@
-import { NeutriumJS } from "neutrium-js";
+import IAPWS97 from "@neutrium/thermo-iaspw97";
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).send("Use POST");
   const { pipe, global } = req.body;
