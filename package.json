@@ -1,7 +1,7 @@
 {
-  "name": "freeze-calc-api",
-  "version": "1.0.0",
-  "dependencies": {
-    "neutrium-js": "^1.0.1"
-  }
-}
+ "name": "time-to-freeze-insu",
+ "version": "1.0.0",
+ "dependencies": {
+   "@neutrium/thermo-iapws97": "^1.0.1",
+   "@neutrium/quantity": "^1.0.2"
+ }
