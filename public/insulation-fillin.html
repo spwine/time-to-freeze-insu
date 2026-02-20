@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link href="css/style_insu.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+          <a class="navbar-brand" href="index.html"
+            ><svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="white"
+              style="width: 28px"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+              />
+            </svg>
+            Back Home
+          </a>
+        </div>
+      </nav>
+      <h1>
+        Fill “Insulation Thickness (in)” in
+        <span class="pill">Pipe_Run.xlsx</span>
+      </h1>
+      <div class="sub">
+        Upload (1) <b>Thermal_Insulation_Thickness_Output.xlsx</b> (thickness
+        matrix vs temperature & diameter) and (2) <b>Pipe_Run.xlsx</b>. The
+        script fills <b>Insulation Thickness (in)</b> where
+        <b>Run Is Insulated (y/n)</b> is “Yes”, using
+        <b>Normal Operating Temperature (°F)</b> and <b>Size</b>.
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="card">
+        <div class="row">
+          <div>
+            <label>1) Upload Thermal_Insulation_Thickness_Output.xlsx</label>
+            <input id="insFile" type="file" accept=".xlsx" />
+          </div>
+          <div>
+            <label>2) Upload Pipe_Run.xlsx</label>
+            <input id="pipeFile" type="file" accept=".xlsx" />
+          </div>
+        </div>
+        <div
+          style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap"
+        >
+          <button id="runBtn">Process & Download Updated Excel</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+          "
+        >
+          <div><b>Log</b> <span id="status" class="pill">idle</span></div>
+          <div class="pill">
+            Rule: choose the smallest “Maximum Operating Class Temperature (F)”
+            ≥ Operating Temp
+          </div>
+        </div>
+        <textarea
+          id="log"
+          class="log"
+          spellcheck="false"
+          placeholder="Logs will appear here..."
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- SheetJS with style support (helps preserve formatting better than plain xlsx) -->
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+    <script src="js/function_insu.js"></script>
+  </body>
+</html>
