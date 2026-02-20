@@ -1,8 +1,0 @@
-{
- "name": "time-to-freeze-insu",
- "version": "1.0.0",
- "dependencies": {
-   "@neutrium/thermo": "^2.0.0"
- }
-}
-
