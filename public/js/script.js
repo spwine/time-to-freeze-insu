@@ -83,6 +83,88 @@ document.getElementById("runCalc").addEventListener("click", async () => {
   });
 });
 
+function addRow(
+  pipe = { enabled: true, nominal: 1, schedule: 80, material: "CS" },
+) {
+  pipes.push(pipe);
+  renderPipes();
+}
+function clearPipes() {
+  pipes = [];
+  renderPipes();
+}
+function renderPipes() {
+  tbody.innerHTML = "";
+  pipes.forEach((p, idx) => {
+    const tr = document.createElement("tr");
+
+    const tdIdx = document.createElement("td");
+    tdIdx.textContent = idx + 1;
+    tr.appendChild(tdIdx);
+
+    const tdEn = document.createElement("td");
+    const en = document.createElement("input");
+    en.type = "checkbox";
+    en.checked = !!p.enabled;
+    en.addEventListener("change", () => {
+      p.enabled = en.checked;
+    });
+    tdEn.appendChild(en);
+    tr.appendChild(tdEn);
+
+    const tdNom = document.createElement("td");
+    const selNom = document.createElement("select");
+    nominalOptions().forEach((n) => {
+      const o = document.createElement("option");
+      o.value = n;
+      o.textContent = n;
+      if (Number(p.nominal) === n) o.selected = true;
+      selNom.appendChild(o);
+    });
+    selNom.addEventListener("change", () => {
+      p.nominal = Number(selNom.value);
+    });
+    tdNom.appendChild(selNom);
+    tr.appendChild(tdNom);
+
+    const tdSch = document.createElement("td");
+    const selSch = document.createElement("select");
+    scheduleOptions(p.material).forEach((s) => {
+      const o = document.createElement("option");
+      o.value = s;
+      o.textContent = s;
+      if (Number(p.schedule) === s) o.selected = true;
+      selSch.appendChild(o);
+    });
+    selSch.addEventListener("change", () => {
+      p.schedule = Number(selSch.value);
+    });
+    tdSch.appendChild(selSch);
+    tr.appendChild(tdSch);
+
+    const tdMat = document.createElement("td");
+    const selMat = document.createElement("select");
+    ["CS", "SS", "P22", "P91", "Custom"].forEach((m) => {
+      const o = document.createElement("option");
+      o.value = m;
+      o.textContent = m;
+      if (p.material === m) o.selected = true;
+      selMat.appendChild(o);
+    });
+    selMat.addEventListener("change", () => {
+      p.material = selMat.value;
+      // refresh schedule options
+      renderPipes();
+    });
+    tdMat.appendChild(selMat);
+    tr.appendChild(tdMat);
+
+    tbody.appendChild(tr);
+  });
+
+  dumpPipeData();
+}
+
 document.getElementById("addPipe").addEventListener("click", () => {
   addRow({ enabled: true, nominal: 1, schedule: 80, material: "CS" });
 });
