@@ -20,3 +20,104 @@ async function runCalculation() {
   }
   renderResults(rows);
 }
+
+document.getElementById("runCalc").addEventListener("click", () => {
+  const g = getGlobal();
+  const enabled = pipes.filter((p) => p.enabled);
+
+  const allLogs = [];
+  const rows = [];
+
+  const ambTemp = document.getElementById("amb-air-temp");
+  const wind = document.getElementById("wind-speed");
+  const initTemp = document.getElementById("init-temp");
+  const insThick = document.getElementById("ins-thick");
+  const cpWaterTxt = document.getElementById("cp-water");
+  const rhoWaterTxt = document.getElementById("rho-water");
+  const resultsWrap = document.getElementById("results-wrap");
+
+  const tAirF = Number(document.getElementById("tAirF").value);
+  const tInitF = Number(document.getElementById("tInitF").value);
+  const initWind = Number(document.getElementById("windMph").value);
+  const insThkIn = Number(document.getElementById("insThkIn").value);
+
+  const waterProps = waterPropsFromInitialTemp_F(tInitF);
+
+  const rhoWater = Number(waterProps.rho_lbft3.toFixed(3)); // lb/ft3
+  const cpWater = Number(waterProps.cp_Btu.toFixed(3)); // Btu/lbm-F
+
+  resultsWrap.style.display = "flex";
+
+  ambTemp.textContent = tAirF + " F";
+  wind.textContent = initWind + " mph";
+  initTemp.textContent = tInitF + " F";
+  insThick.textContent = insThkIn + " in";
+  cpWaterTxt.textContent = cpWater + " Btu/(lb*R)";
+  rhoWaterTxt.textContent = rhoWater + " lb/ft^3";
+
+  enabled.forEach((p) => {
+    try {
+      const sim = simulatePipe(p, g);
+      rows.push({
+        nominal: p.nominal,
+        schedule: p.schedule,
+        material: p.material,
+        ...sim,
+      });
+      allLogs.push(...sim.logLines, "");
+    } catch (e) {
+      allLogs.push(
+        `ERROR for pipe ${p.nominal} ${p.material}: ${e.message}`,
+        "",
+      );
+    }
+  });
+
+  renderResults(rows);
+  writeLog(allLogs);
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+});
+
+document.getElementById("addPipe").addEventListener("click", () => {
+  addRow({ enabled: true, nominal: 1, schedule: 80, material: "CS" });
+});
+
+document.getElementById("clearPipes").addEventListener("click", clearPipes);
+
+// Load the same style of list as the workbook example Case 1 (11 pipes) [1](https://blackandveatch-my.sharepoint.com/personal/thiptinnakornp_bv_com/_layouts/15/Doc.aspx?sourcedoc=%7B6277BE68-B411-4EFF-B268-C3D8B627CEE5%7D&file=Time_to_Freeze_Calculation%20%28CS%29.xlsm&action=default&mobileredirect=true)
+document.getElementById("loadExample").addEventListener("click", () => {
+  clearPipes();
+  [1, 1.5, 2, 2.5, 3, 4, 6, 8, 10, 12, 14].forEach((n, i) => {
+    addRow({
+      enabled: true,
+      nominal: n,
+      schedule: n <= 2 ? 80 : 40,
+      material: "CS",
+    });
+  });
+});
+
+// Tabs
+document.querySelectorAll(".tab").forEach((t) => {
+  t.addEventListener("click", () => {
+    document
+      .querySelectorAll(".tab")
+      .forEach((x) => x.classList.remove("active"));
+    t.classList.add("active");
+    const tab = t.dataset.tab;
+
+    document
+      .getElementById("tab-inputs")
+      .classList.toggle("hide", tab !== "inputs");
+    document
+      .getElementById("tab-method")
+      .classList.toggle("hide", tab !== "method");
+    document
+      .getElementById("tab-pipeData")
+      .classList.toggle("hide", tab !== "pipeData");
+  });
+});
