@@ -1,0 +1,7 @@
+{
+  "name": "freeze-calc-api",
+  "version": "1.0.0",
+  "dependencies": {
+    "neutrium-js": "^1.0.1"
+  }
+}
